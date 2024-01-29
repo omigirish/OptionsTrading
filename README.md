@@ -85,9 +85,6 @@ https://github.com/Yashcoder2802/OptionsChainTool/assets/84177162/de2d0899-a2f3-
 ![App Screenshot](https://cdn.discordapp.com/attachments/1124570781070917735/1125835088073076898/image.png)
 
 
-![App Screenshot](https://cdn.discordapp.com/attachments/1124570781070917735/1125872416351064144/image.png)
-
-
 # Architecture
 ![Arch Screenshot](./DemoFiles/architecture.png)
 
