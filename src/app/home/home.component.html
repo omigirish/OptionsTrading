@@ -1,0 +1,217 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <i class="fa-solid fa-link"></i>
+        Options<span style="color:#f50057">Trading </span>
+        <span class="spacer"></span>
+        <span style="font-size: 19px; margin-right: 10px;">View</span>
+        <div class="viewToggle">
+            
+            <i class="fa-solid fa-table"></i>
+            <mat-slide-toggle [(ngModel)]="showChart" style="margin-left: 5px;"></mat-slide-toggle>
+            <i class="fa-solid fa-chart-column"></i>
+        </div>
+        <div class="drp-dwn">
+            <mat-form-field>
+                <mat-label>Underlying Asset</mat-label>
+                <mat-select [(value)]="selected_underlying" (valueChange)="onUnderlyingChange()">
+                    <mat-option *ngFor="let underlying of underlyings" [value]="underlying">
+                        {{underlying}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="drp-dwn">
+            <mat-form-field>
+                <mat-label>Expiry Date</mat-label>
+                <mat-select [(value)]="selected_expiryDate" (valueChange)="onExpiryDateChange()">
+                    <mat-option *ngFor="let expiry of expiryDates" [value]="expiry">
+                        {{expiry}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<div class="underlying-display">
+    <i class="fa-solid fa-chart-line"></i>
+    <b>{{selected_underlying}} Options Chain</b>
+    <div class="spacer"></div>
+    <div class="showGreeks" *ngIf="!showChart">
+        Show Greeks
+        <mat-slide-toggle [(ngModel)]="showGreeks" style="margin-left: 5px;"></mat-slide-toggle>
+    </div>
+
+    <i *ngIf="!showChart" class="fa-solid fa-square" style="color:#3f51b527; font-size: 20px;"></i>
+    <div *ngIf="!showChart" class="price">
+        <p id="index"> Strike Price</p>
+        <p style="font-size: 12px; color:grey">{{selected_underlying}}</p>
+    </div>
+    <i *ngIf="!showChart" class="fa-solid fa-square" style="color: #ff78c561; font-size: 20px;"></i>
+    <div *ngIf="!showChart" class="price">
+        <p id="index">ITM</p>
+        <p style="font-size: 12px; color:grey">In The Money</p>
+    </div>
+    <mat-form-field *ngIf="showChart">
+        <mat-label>Y-Axis</mat-label>
+        <mat-select [(value)]="yIndex" (valueChange)="onYChange()">
+            <mat-option  value="OI">
+                Open Interest
+            </mat-option>
+            <mat-option  value="LTP">
+                Last Traded Price
+            </mat-option>
+            <mat-option  value="ASK">
+                ASK
+            </mat-option>
+            <mat-option  value="BID">
+                BID
+            </mat-option>
+            <mat-option  value="VOLUME">
+                Volume
+            </mat-option>
+            <mat-option  value="IV">
+                Implied Volatility
+            </mat-option>
+            <mat-option  value="Theta">
+                Thetha
+            </mat-option>
+            <mat-option  value="Delta">
+                Delta
+            </mat-option>
+            <mat-option  value="Vega">
+                Vega
+            </mat-option>
+            <mat-option  value="Rho">
+                Rho
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <i class="fa-solid fa-indian-rupee-sign" style="font-size: 30px; margin-left: 20px; padding-left: 0px;"></i>
+    <div class="price">
+        <p id="index"> {{spotPriceMap[selected_underlying] | number:'1.0-0'|| "---"}}</p>
+        <p style="font-size: 12px;">-{{priceChange}} (-{{percentChange}})</p>
+    </div>
+    <i class="fa-solid fa-stopwatch" style="font-size: 30px;"></i>
+    <div class="price" style="margin-right: 25px;">
+        <p id="index">{{timestamp | date}} </p>
+        <p style="font-size: 12px; color:gray"> Last Updated Timestamp</p>
+    </div>
+
+</div>
+
+<div class="table-container" *ngIf="!showChart">
+    <table class="styled-table">
+        <thead>
+            <tr class="clm-grp">
+                <th *ngIf="showGreeks" colspan=11>Calls</th>
+                <th *ngIf="!showGreeks" colspan=6>Calls</th>
+                <th colspan="1"> </th>
+                <th *ngIf="showGreeks" colspan=11>Puts</th>
+                <th *ngIf="!showGreeks" colspan=6>Puts</th>
+            </tr>
+            <tr>
+                <th *ngIf="showGreeks">Rho</th>
+                <th *ngIf="showGreeks">Vega</th>
+                <th *ngIf="showGreeks">Theta</th>
+                <th *ngIf="showGreeks">Gamma</th>
+                <th *ngIf="showGreeks">Delta</th>
+                <th>OI</th>
+                <th>VOLUME</th>
+                <th>IV</th>
+                <th>LTP</th>
+                <th>BID</th>
+                <th>ASK</th>
+                <th>STRIKE</th>
+                <th>ASK</th>
+                <th>BID</th>
+                <th>LTP</th>
+                <th>IV</th>
+                <th>VOLUME</th>
+                <th>OI</th>
+                <th *ngIf="showGreeks">Delta</th>
+                <th *ngIf="showGreeks">Gamma</th>
+                <th *ngIf="showGreeks">Theta</th>
+                <th *ngIf="showGreeks">Vega</th>
+                <th *ngIf="showGreeks">Rho</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let row of displayData">
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Rho']}} </td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Vega']}}</td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Theta']}}</td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Gamma']}}</td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Delta']}}</td>
+                <td class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['OI']}} <br>
+                    <span *ngIf="row['CHNG IN OI'] >0" class="green">+</span>
+                    <span class="{{ row['CHNG IN OI'] >0 ? 'green' : 'red'}}">{{row['CHNG IN OI']}}</span>
+                </td>
+
+                <td class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['VOLUME']}}</td>
+                <td class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['IV']}}</td>
+                <td class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['LTP']}} <br>
+                    <span *ngIf="row['CHNG']>0" class="green">+</span>
+                    <span class="{{ row['CHNG'] >0 ? 'green' : 'red'}}">{{row['CHNG']}}</span>
+                </td>
+                <td class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['BID']}} <br>
+                    <span class="qty">{{row['BID QTY']}}</span>
+                </td>
+                <td class="{{ row['STRIKE']<spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['ASK']}} <br>
+                    <span class="qty">{{row['ASK QTY']}}</span>
+                </td>
+
+                <td class="strike">{{row['STRIKE']}}</td>
+
+                <td class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">{{row['ASKp']}} <br>
+                    <span class="qty">{{row['ASK QTYp']}}</span>
+
+                </td>
+                <td class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">{{row['BIDp']}} <br>
+                    <span class="qty">{{row['BID QTYp']}}</span></td>
+              
+                <td class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">{{row['LTPp']}} <br>
+                    <span *ngIf="row['CHNGp']>0" class="green">+</span>
+                    <span class="{{ row['CHNGp'] >0 ? 'green' : 'red'}}">{{row['CHNGp']}}</span></td>
+                <td class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">{{row['IVp']}}</td>
+                <td class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">{{row['VOLUMEp']}}
+                </td>
+        
+                <td class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">{{row['OIp']}} <br>
+                    <span *ngIf="row['CHNG IN OIp'] >0" class="green">+</span>
+                    <span class="{{ row['CHNG IN OIp'] >0 ? 'green' : 'red'}}">{{row['CHNG IN OIp']}}</span>
+                </td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Deltap']}} </td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Gammap']}}</td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Thetap']}}</td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Vegap']}}</td>
+                <td *ngIf="showGreeks" class="{{ row['STRIKE']>spotPriceMap[selected_underlying] ? 'highlight' : ''}}">
+                    {{row['Rhop']}}</td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="chart1-container" [hidden]="!showChart" >
+   
+    <canvas id="chart1"></canvas>
+    <p style="text-align: center; padding-top: 5px; font-weight: bold;">Strike Price({{selected_underlying}})</p>
+<div>
