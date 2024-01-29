@@ -7,12 +7,6 @@ The Options Chain Tool is a real-time options market analysis web application wi
 Options Trading(main folder) contains 3 folders
 - src - Frontend
 - TestServer - Backend
-- DemoFiles - Contains DemoVideo and Ppt
-
-
-## Link to video and Ppt
-
-https://drive.google.com/drive/folders/1eDbRGfkAPKV9U2h2GxcCXlPFQ2EEpVtH?usp=sharing
 
 ## Table of Contents
 
@@ -94,4 +88,9 @@ https://github.com/Yashcoder2802/OptionsChainTool/assets/84177162/de2d0899-a2f3-
 ![App Screenshot](https://cdn.discordapp.com/attachments/1124570781070917735/1125872416351064144/image.png)
 
 
+# Architecture
+![Arch Screenshot](./DemoFiles/architecture.png)
+
+# Flow Diagram
+![Arch Screenshot](./DemoFiles/flowdiag.png)
 
